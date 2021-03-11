@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  partygame:
+    image: ${DOCKER_REGISTRY-}partygame
+    build:
+      context: .
+      dockerfile: Dockerfile
+  db:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
+     - ACCEPT_EULA=Y
+     - SA_PASSWORD=Pwd12345!   
+    ports:
+     - '1433:1433'
