@@ -1,7 +1,49 @@
 ﻿@page "/"
+@using Microsoft.EntityFrameworkCore
+@using Database
+@using Database.Models
+@using Microsoft.AspNetCore.Hosting
+@implements IDisposable
+@inject IDbContextFactory<PartyGameContext> DbFactory
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+
+@if (_users == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <tbody>
+        @foreach (var user in _users)
+        {
+            <tr>@user.Username</tr>
+            <tr>@user.Email</tr>
+            <tr>@user.Hash</tr>
+            <tr>@user.Role</tr>
+        }
+    </tbody>
+}
+
+@code
+{
+    IList<User> _users;
+    PartyGameContext _context;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _context = DbFactory.CreateDbContext();
+        _users = await _context.Users.ToListAsync();
+        await base.OnInitializedAsync();
+    }
+
+    public void Dispose()
+    {
+        _context.Dispose();
+    }
+}
