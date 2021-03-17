@@ -5,15 +5,13 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Pwd12345!" -p 1433:1433 --name partyGameSql -d mcr.microsoft.com/mssql/server:2019-latest
-
-
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["PartyGame.csproj", "."]
-RUN dotnet restore "./PartyGame.csproj"
+COPY ["../Database/Database.csproj", "../Database/"]
+RUN dotnet restore "PartyGame.csproj"
 COPY . .
-WORKDIR "/src/."
+WORKDIR "/src/"
 RUN dotnet build "PartyGame.csproj" -c Release -o /app/build
 
 FROM build AS publish
