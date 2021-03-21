@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace GenerateRandomUniqKey
+namespace PartyGame
 {
     public class UniqKey
     {
