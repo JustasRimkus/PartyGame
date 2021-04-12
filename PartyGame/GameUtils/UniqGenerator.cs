@@ -6,6 +6,9 @@ namespace PartyGame
 {
     public class UniqGenerator
     {
+
+
+
         public string GenerateKey()
         {
             Random random = new Random((int)DateTime.Now.Ticks);
