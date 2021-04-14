@@ -1,28 +1,56 @@
-﻿@page "/RegisterPage" 
+﻿@page "/RegisterPage"
+@using Database.Models
+@using Database
+@using Database.Repositories
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<PartyGameContext> DbFactory
 
-<form class="row g-3">
+<EditForm class="row g-3" Model="@user" OnSubmit="@FormSubmit">
+    <div class="col-auto">
+        <label for="user">Enter username:</label>
+    </div>
+    <div class="col-auto">
+        <InputText @bind-Value="user.Username" type="text" class="form-control" />
+    </div>
     <div class="col-auto">
         <label for="email">Enter email:</label>
     </div>
     <div class="col-auto">
-        <input type="text" class="form-control">
-    </div>
-    <div class="col-auto">
-        <label for="email">Enter password:</label>
-    </div>
-    <div class="col-auto">
-        <input type="text" class="form-control">
-    </div>    <div class="col-auto">
-        <label for="email">Confirm password:</label>
-    </div>
-    <div class="col-auto">
-        <input type="text" class="form-control">
+        <InputText @bind-Value="user.Email" type="text" class="form-control" />
     </div>
     <div class="col-auto">
         <button type="submit" class="btn btn-primary mb-3">Register</button>
     </div>
-</form>
+    <div class="col-auto">
+        <label for="password">Enter password:</label>
+    </div>
+    <div class="col-auto">
+        <input @bind="@Pass" type="password" class="form-control" />
+    </div>
+    <div class="col-auto">
+        <label for="confirm">Confirm password:</label>
+    </div>
+    <div class="col-auto">
+        <input @bind="@Conf" for="password" type="password" class="form-control" />
+    </div>
+</EditForm>
 
 @code {
+    private User user = new User();
+    private string Pass { get; set; }
+    private string Conf { get; set; }
 
+    private async void FormSubmit()
+    {
+        if (!string.Equals(Pass, Conf, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        var hash = Cryptography.Encrypt(Pass);
+        var repository = new UserRepository(DbFactory.CreateDbContext());
+        user.Hash = hash;
+        await repository.AddAsync(user);
+        await repository.SaveAsync();
+    }
 }
