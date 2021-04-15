@@ -20,9 +20,11 @@ namespace Database
                 return;
             }
 
+            var pass = Cryptography.Encrypt("admin");
+
             var users = new User[]
             {
-                new User { Username = "Maintainer", Email="maintianer@partygame.com", Hash="hash", Role = Role.Admin }
+                new User { Username = "Maintainer", Email="maintianer@partygame.com", Hash=pass, Role = Role.Admin }
             };
 
             foreach (var user in users)

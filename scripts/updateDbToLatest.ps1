@@ -1,0 +1,1 @@
+dotnet ef --startup-project ..\PartyGame\ database update
