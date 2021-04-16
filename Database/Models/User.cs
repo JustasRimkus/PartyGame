@@ -14,5 +14,7 @@ namespace Database.Models
         public string Email { get; set; }
         public string Hash { get; set; }
         public Role Role { get; set; }
+        public Status Status { get; set; }
+        public int StatusId { get; set; }
     }
 }
