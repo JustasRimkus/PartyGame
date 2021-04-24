@@ -16,7 +16,7 @@ namespace Database
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var pass = Cryptography.Encrypt("admin");
+            var pass = HashInfrastructure.Hash("admin");
 
             var user = new User { Id = 1, Username = "Maintainer", Email="maintianer@partygame.com", Hash = pass, Role = Role.Admin };
 

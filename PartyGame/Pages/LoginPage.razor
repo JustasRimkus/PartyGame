@@ -1,23 +1,54 @@
 ﻿@page "/LoginPage"
+@using Database
+@using Database.Models
+@using Database.Repositories
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<PartyGameContext> DbFactory
 
-<form class="row g-3">
-    <div class="col-auto">
-        <label for="email">Enter email:</label>
-    </div>
-    <div class="col-auto">
-        <input type="text" class="form-control">
-    </div>
-    <div class="col-auto">
-        <label for="email">Enter password:</label>
-    </div>
-    <div class="col-auto">
-        <input type="text" class="form-control">
-    </div>
-    <div class="col-auto">
-        <button type="submit" class="btn btn-primary mb-3">Login</button>
-    </div>
-</form>
+<div class="container">
+    <EditForm Model="@user" OnSubmit="@FormSubmit">
+        <div class="col-auto">
+            <label for="email">Enter email:</label>
+        </div>
+        <div class="col-auto">
+            <input type="text" class="form-control" @bind="@Email" />
+        </div>
+        <div class="col-auto">
+            <label for="password">Enter password:</label>
+        </div>
+        <div class="col-auto">
+            <input type="text" class="form-control" @bind="@Pass" />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-3">Login</button>
+        </div>
+    </EditForm>
+</div>
+       
 
 @code {
+    private readonly User user = new User();
+    public string Email { get; set; }
+    public string Pass { get; set; }
 
+    private async void FormSubmit()
+    {
+        if (string.IsNullOrEmpty(Pass) || string.IsNullOrEmpty(Email))
+        {
+            CleanFields();
+            return;
+        }
+
+        var repository = new UserRepository(DbFactory.CreateDbContext());
+        var user = await repository.GetUserAsync(Email.ToLower());
+        var verify = HashInfrastructure.Verify(user.Hash, Pass);
+
+        CleanFields();
+    }
+
+
+    private void CleanFields()
+    {
+        Pass = Email = "";
+    }
 }

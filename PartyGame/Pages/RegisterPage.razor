@@ -44,8 +44,8 @@
 
     private async void FormSubmit()
     {
-        if (!string.Equals(Pass, Conf, StringComparison.Ordinal) 
-            || string.IsNullOrEmpty(Pass) 
+        if (!string.Equals(Pass, Conf, StringComparison.Ordinal)
+            || string.IsNullOrEmpty(Pass)
             || string.IsNullOrEmpty(Conf)
             || string.IsNullOrEmpty(user.Email)
             || string .IsNullOrEmpty(user.Username))
@@ -54,7 +54,7 @@
             return;
         }
 
-        var hash = Cryptography.Encrypt(Pass);
+        var hash = HashInfrastructure.Hash(Pass);
         var repository = new UserRepository(DbFactory.CreateDbContext());
         user.Hash = hash;
         user.Id = 0;

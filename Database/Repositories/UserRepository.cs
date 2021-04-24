@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Database.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Database.Repositories
 {
@@ -24,6 +26,11 @@ namespace Database.Repositories
         public async Task AddAsync(User user)
         {
             await dbContext.Users.AddAsync(user);
+        }
+
+        public async Task<User> GetUserAsync(string email)
+        {
+            return await dbContext.Users.FirstOrDefaultAsync(q => EF.Functions.Like(q.Email, email));
         }
 
         public void Remove(User user)
