@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Database
 {
-    public static class Cryptography
+    public static class HashInfrastructure
     {
-        public static string Encrypt(string pass)
+        public static string Hash(string pass)
         {
             byte[] salt;
             new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);

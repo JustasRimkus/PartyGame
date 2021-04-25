@@ -1,6 +1,5 @@
 ﻿using Database.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using Database.Enums;
 
 namespace Database
@@ -11,6 +10,10 @@ namespace Database
 
         public DbSet<Status> Status { get; set; }
 
+        public DbSet<Question> Questions { get; set; }
+
+        public DbSet<Answer> Answers { get; set; }
+
         public PartyGameContext(DbContextOptions<PartyGameContext> options) : base(options)
         {
 
@@ -18,7 +21,7 @@ namespace Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var pass = Cryptography.Encrypt("admin");
+            var pass = HashInfrastructure.Hash("admin");
 
             var user = new User { Id = 1, Username = "Maintainer", Email = "maintianer@partygame.com", Hash = pass, Role = Role.Admin, StatusId = 1 };
             var status = new Status { Id = 1 };
@@ -27,6 +30,11 @@ namespace Database
                 .HasOne(b => b.Status)
                 .WithOne(b => b.User)
                 .HasForeignKey<User>(b => b.StatusId);
+
+            modelBuilder.Entity<Question>()
+                .HasMany(q => q.Answers)
+                .WithOne(q => q.Question)
+                .HasForeignKey(q => q.QuestionId);
 
             modelBuilder.Entity<Status>().HasData(status);
             modelBuilder.Entity<User>().HasData(user);

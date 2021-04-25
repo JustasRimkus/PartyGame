@@ -20,7 +20,7 @@ namespace Database
                 return;
             }
 
-            var pass = Cryptography.Encrypt("admin");
+            var pass = HashInfrastructure.Hash("admin");
 
             var users = new User[]
             {
