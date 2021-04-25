@@ -3,10 +3,11 @@
 @using Database.Models
 @using Database.Repositories
 @using Microsoft.EntityFrameworkCore
+@inject Blazored.LocalStorage.ILocalStorageService ls
 @inject IDbContextFactory<PartyGameContext> DbFactory
 
 <div class="container">
-    <EditForm Model="@user" OnSubmit="@FormSubmit">
+    <EditForm Model="@_user" OnSubmit="@FormSubmit">
         <div class="col-auto">
             <label for="email">Enter email:</label>
         </div>
@@ -24,10 +25,10 @@
         </div>
     </EditForm>
 </div>
-       
+
 
 @code {
-    private readonly User user = new User();
+    private readonly User _user = new User();
     public string Email { get; set; }
     public string Pass { get; set; }
 
@@ -41,8 +42,9 @@
 
         var repository = new UserRepository(DbFactory.CreateDbContext());
         var user = await repository.GetUserAsync(Email.ToLower());
+        if (user == null) return;
         var verify = HashInfrastructure.Verify(user.Hash, Pass);
-
+        await ls.SetItemAsync("User", verify);
         CleanFields();
     }
 

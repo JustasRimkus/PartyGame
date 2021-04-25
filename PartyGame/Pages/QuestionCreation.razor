@@ -1,0 +1,85 @@
+﻿@page "/questioncreation"
+
+@using Database.Models
+@using Microsoft.EntityFrameworkCore
+@using Database
+@using Database.Repositories
+
+@inject IDbContextFactory<PartyGameContext> DbFactory
+
+<div class="container">
+    <EditForm Model="@Question" OnSubmit="@QuestionSubmit">
+        <div class="row">
+            <div class="col-12">
+                <label>Enter question:</label>
+            </div>
+            <div class="col-12">
+                <InputText @bind-Value="Question.Text" type="text" class="form-control" />
+                <button type="submit" class="btn btn-primary mb-3">Add question</button>
+            </div>
+        </div>
+    </EditForm>
+    @if (Questions == null)
+    {
+        <div>Loading...</div>
+    }
+    else
+    {
+        <EditForm Model="@Answer" OnSubmit="@AnswerSubmit">
+            <div class="row">
+                <select class="custom-select col-6" @bind="Answer.QuestionId">
+                    @foreach (var question in Questions)
+                    {
+                        <option value="@question.Id">@question.Text</option>
+                    }
+                </select>
+                <div class="col-3">
+                    <InputText @bind-Value="Answer.Text" type="text" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary mb-3 col-3">Add Answer</button>
+            </div>
+        </EditForm>
+        <div class="row">
+            <ul class="list-group col-12">
+                @foreach (var i in Questions)
+                {
+                    <li class="list-group-item">@i.Text</li>
+                }
+            </ul>
+        </div>
+    }
+</div>
+
+@code {
+    public Question Question = new Question();
+    public Answer Answer = new Answer();
+    public List<Question> Questions { get; set; }
+    private QuestionRepository repository;
+    private AnswerRepository answerRepository;
+
+    protected override async Task OnInitializedAsync()
+    {
+        repository = new QuestionRepository(DbFactory.CreateDbContext());
+        answerRepository = new AnswerRepository(DbFactory.CreateDbContext());
+        Questions = await repository.GetQuestionsAsync();
+    }
+
+    public async void QuestionSubmit()
+    {
+        if (string.IsNullOrEmpty(Question.Text) || repository == null) return;
+        await repository.AddAsync(Question);
+        await repository.SaveAsync();
+        Questions.Add(Question);
+        Question = new Question();
+        StateHasChanged();
+    }
+
+    public async void AnswerSubmit()
+    {
+        if (string.IsNullOrEmpty(Answer.Text) || answerRepository == null) return;
+        await answerRepository.AddAsync(Answer);
+        await answerRepository.SaveAsync();
+        Answer = new Answer();
+        StateHasChanged();
+    }
+}

@@ -1,6 +1,5 @@
 ﻿using Database.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using Database.Enums;
 
 namespace Database
@@ -10,6 +9,10 @@ namespace Database
         public DbSet<User> Users { get; set; }
 
         public DbSet<Status> Status { get; set; }
+
+        public DbSet<Question> Questions { get; set; }
+
+        public DbSet<Answer> Answers { get; set; }
 
         public PartyGameContext(DbContextOptions<PartyGameContext> options) : base(options)
         {
@@ -27,6 +30,11 @@ namespace Database
                 .HasOne(b => b.Status)
                 .WithOne(b => b.User)
                 .HasForeignKey<User>(b => b.StatusId);
+
+            modelBuilder.Entity<Question>()
+                .HasMany(q => q.Answers)
+                .WithOne(q => q.Question)
+                .HasForeignKey(q => q.QuestionId);
 
             modelBuilder.Entity<Status>().HasData(status);
             modelBuilder.Entity<User>().HasData(user);
