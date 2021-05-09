@@ -57,7 +57,7 @@
         var hash = HashInfrastructure.Hash(Pass);
         var repository = new UserRepository(DbFactory.CreateDbContext());
         user.Hash = hash;
-        user.Id = 0;
+        //user.Id = 0;
         await repository.AddAsync(user);
         await repository.SaveAsync();
         CleanFields();
