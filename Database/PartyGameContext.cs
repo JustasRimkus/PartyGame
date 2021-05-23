@@ -18,7 +18,7 @@ namespace Database
         {
 
         }
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var pass = HashInfrastructure.Hash("admin");
