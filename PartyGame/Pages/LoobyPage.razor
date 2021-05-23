@@ -1,16 +1,100 @@
 ﻿@page "/LoobyPage"
 
+<ContextMenu Id="myMenu">
+    <Item OnClick="@OnClick" Id="1"><img src="/avatars/avatar1.png" alt="Sample Image" width="50px" /></Item>
+    <Item OnClick="@OnClick" Id="2"><img src="/avatars/avatar2.png" alt="Sample Image" width="50px" /></Item>
+    <Item OnClick="@OnClick" Id="3"><img src="/avatars/avatar3.png" alt="Sample Image" width="50px" /></Item>
+    <Item OnClick="@OnClick" Id="4"><img src="/avatars/avatar4.png" alt="Sample Image" width="50px" /></Item>
+    <Item OnClick="@OnClick" Id="5"><img src="/avatars/avatar5.png" alt="Sample Image" width="50px" /></Item>
+    <Item OnClick="@OnClick" Id="6"><img src="/avatars/avatar6.png" alt="Sample Image" width="50px" /></Item>
+    <Item OnClick="@OnClick" Id="7"><img src="/avatars/avatar7.png" alt="Sample Image" width="50px" /></Item>
+    <Item OnClick="@OnClick" Id="8"><img src="/avatars/avatar8.png" alt="Sample Image" width="50px" /></Item>
+    <Item OnClick="@OnClick" Id="9"><img src="/avatars/avatar9.png" alt="Sample Image" width="50px" /></Item>
+    <Item OnClick="@OnClick" Id="10"><img src="/avatars/avatar10.png" alt="Sample Image" width="50px" /></Item>
+
+    <Seperator></Seperator>
+</ContextMenu>
+
 <form class="row g-3">
     <div class="col-auto">
-        <img src="https://icons-for-free.com/iconfiles/png/512/human+male+profile+user+icon-1320196240448793481.png" style="width:50px; height:50px">
+        @*<img src="https://icons-for-free.com/iconfiles/png/512/human+male+profile+user+icon-1320196240448793481.png" style="width:50px; height:50px">*@
+        <ContextMenuTrigger MenuId="myMenu">
+            @* <div> <img src="/avatars/avatar1.png" alt="Sample Image" width="50px" /></div> *@
+            @*text *@
+
+            @switch (clickedText.ToString())
+            {
+                case "":
+                    text = "/avatars/avatar.png";
+                    break;
+                case "1":
+                    text = "/avatars/avatar1.png";
+                    break;
+                case "2":
+                    text = "/avatars/avatar2.png";
+                    break;
+                case "3":
+                    text = "/avatars/avatar3.png";
+                    break;
+                case "4":
+                    text = "/avatars/avatar4.png";
+                    break;
+                case "5":
+                    text = "/avatars/avatar5.png";
+                    break;
+                case "6":
+                    text = "/avatars/avatar6.png";
+                    break;
+                case "7":
+                    text = "/avatars/avatar7.png";
+                    break;
+                case "8":
+                    text = "/avatars/avatar8.png";
+                    break;
+                case "9":
+                    text = "/avatars/avatar9.png";
+                    break;
+                case "10":
+                    text = "/avatars/avatar10.png";
+                    break;
+                default:
+                    text = "/avatars/avatar.png";
+                    break;
+            }
+            <div> <img src="@text" alt="Sample Image" width="50px" /></div>
+        </ContextMenuTrigger>
     </div>
     <div class="col-auto">
         <label for="UserName" style="margin-top:15px;">Vartotojas</label>
     </div>
+    <div class="col-auto">
+
+        <form method="get" action="/StatusPage">
+            <button type="submit" class="btn btn-primary mb-3">Profile</button>
+        </form>
+
+    </div>
 </form>
+
+<br><br>
+<div class="col-auto">
+
+    <form method="get" action="/GamePage">
+        <button type="submit" class="btn btn-primary mb-3">Play</button>
+    </form>
+
+</div>
 
 
 
 @code {
+    //string text = "<div><img src=\"/avatars/avatar1.png\" alt=\"Sample Image\" width=\"50px\" /></div>";
+    string clickedText = "";
+    string text;
+    // https://www.youtube.com/watch?v=ws5-CUzY7_w&t=470s
 
+    void OnClick(ItemClickEventArgs e)
+    {
+        clickedText = $"{e.MenuItem.Id}";
+    }
 }
