@@ -1,4 +1,9 @@
 ﻿@page "/profileavatar"
+@using Microsoft.EntityFrameworkCore
+@using Database
+@using Database.Models
+@using Database.Repositories
+@inject IDbContextFactory<PartyGameContext> DbFactory
 
 <h3>ProfileAvatar</h3>
 
@@ -71,8 +76,8 @@
     //string text = "<div><img src=\"/avatars/avatar1.png\" alt=\"Sample Image\" width=\"50px\" /></div>";
     string clickedText = "";
     string text;
-    // https://www.youtube.com/watch?v=ws5-CUzY7_w&t=470s
 
+    
     void OnClick(ItemClickEventArgs e)
     {
         clickedText = $"{e.MenuItem.Id}";

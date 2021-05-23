@@ -1,5 +1,10 @@
 ﻿@page "/GamePage"
-
+@using Database
+@using Database.Models
+@using Database.Repositories
+@using Microsoft.EntityFrameworkCore
+@using System.Diagnostics
+@inject IDbContextFactory<PartyGameContext> DbFactory
 
 <ContextMenu Id="myMenu">
     <Item OnClick="@OnClick" Id="1"><img src="/avatars/avatar1.png" alt="Sample Image" width="50px" /></Item>
@@ -228,59 +233,34 @@
             Player 3
         </div>
 
-
-
-
-
-
-
-
-        <div class="col-6" style="text-align:center">
-            <h2 style="text-align:center">TIMER:</h2>
+        <div class="col-6" style="text-align: center">
+            <h1 style="text-align:center">Team @team[index].Name</h1>
+            <h1 style="text-align:center">Score @team[index].Score</h1>
+            <h4 style="text-align: center">@Question.Text</h4>
+            <br><br>
+            @if (answers != null)
+            {
+                <table style="width: 100%; border: 1px solid black">
+                    @foreach (var answ in answers)
+                    {
+                        <tr>
+                            <td style="border: 1px solid black">@answ.Text</td>
+                            <td style="border: 1px solid black">@answ.Popularity</td>
+                        </tr>
+                    }
+                </table>
+            }
             <br><br>
 
+            <p style="text-align: center">Player 1's turn to answer!</p>
 
-            <h2 style="text-align:center">Question</h2>
-            <br><br>
-
-
-            <table style="width:100%;border: 1px solid black">
-                <tr>
-                    <td style="border: 1px solid black">answer1</td>
-                    <td style="border: 1px solid black">answer5</td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid black">answer2</td>
-                    <td style="border: 1px solid black">answer6</td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid black">answer3</td>
-                    <td style="border: 1px solid black">answer7</td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid black">answer4</td>
-                    <td style="border: 1px solid black">answer8</td>
-                </tr>
-            </table>
-            <br><br>
-
-            <p style="text-align:center">Player 1's turn to answer!</p>
-
-            <input type="text" id="fname" name="fname">
-            <input type="submit" value="Submit">
+            <input @bind-value="Input" type="text" id="fname" name="fname">
+            <button class="btn btn-primary mb-3" @onclick="SubmitAnswer">Submit</button>
             <br><br>
             <form method="get" action="/">
                 <button type="submit" class="btn btn-primary mb-3">Exit game</button>
             </form>
         </div>
-
-
-
-
-
-
-
-
         <div class="col" style="background-color:DodgerBlue; text-align:center">
 
             <h2 style="text-align:center">BLUE TEAM</h2>
@@ -424,25 +404,69 @@
 
             Player 6
         </div>
-
     </div>
-    
 </div>
 
-
-
-
-
 @code {
+
+    public class Team
+    {
+        public string Name { get; set; }
+        public int Score { get; set; }
+    }
+
+    public Team[] team = { new Team { Name = "A", Score = 0 }, new Team { Name = "B", Score = 0 } };
+    public int index = 0;
+
     string clickedText = "";
     string clickedText1 = "";
     string clickedText2 = "";
     string clickedText3 = "";
     string clickedText4 = "";
     string clickedText5 = "";
+    public Question Question { get; set; } = new Question();
+    public int Left { get; set; } = 60;
+    public bool Show { get; set; }
+    public string Input { get; set; }
     string text;
     // context menu https://www.youtube.com/watch?v=ws5-CUzY7_w&t=470s
     // grid https://getbootstrap.com/docs/4.0/layout/grid/#responsive-classes
+    Stopwatch watch = new Stopwatch();
+    QuestionRepository questionRepository;
+    AnswerRepository answerRepository;
+    List<Question> questions;
+    List<Answer> answers;
+    Random rnd = new Random();
+
+    protected override async Task OnInitializedAsync()
+    {
+        questionRepository = new QuestionRepository(DbFactory.CreateDbContext());
+        answerRepository = new AnswerRepository(DbFactory.CreateDbContext());
+        questions = await questionRepository.GetQuestionsAsync();
+        Question = questions[rnd.Next(questions.Count)];
+        answers = new List<Answer>();
+        watch.Start();
+    }
+
+    public async void SubmitAnswer()
+    {
+        if (string.IsNullOrEmpty(Input)) return;
+        var answer = await answerRepository.GetAnswer(Input);
+        if (answer == null) return;
+
+        var len = answers.Count;
+        answers.Add(answer);
+        answers = answers.Distinct().ToList();
+        if (len == answers.Count) return;
+        team[index].Score += answer.Popularity;
+        index = index switch
+        {
+            0 => 1,
+            1 => 0,
+            _ => index
+            };
+        StateHasChanged();
+    }
 
     void OnClick(ItemClickEventArgs e)
     {
